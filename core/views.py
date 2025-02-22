@@ -9,6 +9,7 @@ from .serializers import (
     UserSerializer,
     ProjectSerializer,
     CollaboratorSerializer,
+    NotificationSerializer,
 )
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -40,6 +41,12 @@ class UserViewSet(viewsets.ModelViewSet):
                 status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    @action(detail=True, methods=['GET'])
+    def notifications(self, request, pk=None):
+        notifications = Notification.objects.filter(user_id=pk)
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data)
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -57,4 +64,10 @@ class ProjectViewSet(viewsets.ModelViewSet):
 class CollaboratorViewSet(viewsets.ModelViewSet):
     queryset = Collaborator.objects.all()
     serializer_class = CollaboratorSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class NotificationViewSet(viewsets.ModelViewSet):
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]

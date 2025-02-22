@@ -14,23 +14,27 @@ class Project(models.Model):
 
 
 class Collaborator(models.Model):
-    ROLE_CHOICES = [("admin", "Admin"), ("editor", "Editor"), ("viewer", "Viewer")]
+    ROLE_CHOICES = [('admin', 'Admin'), ('editor', 'Editor'), ('viewer', 'Viewer')]
 
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=100)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
     role = models.CharField(max_length=6, choices=ROLE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ('user_id', 'project_id')
 
     def __str__(self):
         return self.role
 
 
 class Notification(models.Model):
-    STATUS_CHOICES = [("unread", "Unread"), ("read", "Read")]
+    STATUS_CHOICES = [('unread', 'Unread'), ('read', 'Read')]
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, on_delete=models.CASCADE)
     message = models.TextField()
-    status = models.CharField(max_length=6, choices=STATUS_CHOICES, default="unread")
+    status = models.CharField(max_length=6, choices=STATUS_CHOICES, default='unread')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

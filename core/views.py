@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth.models import User
@@ -7,6 +8,7 @@ from .models import Project, Collaborator, Notification
 from .serializers import (
     UserSerializer,
     ProjectSerializer,
+    CollaboratorSerializer,
 )
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -43,4 +45,16 @@ class UserViewSet(viewsets.ModelViewSet):
 class ProjectViewSet(viewsets.ModelViewSet):
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=True, methods=['GET'])
+    def collaborators(self, request, pk=None):
+        collaborators = Collaborator.objects.filter(project_id=pk)
+        serializer=CollaboratorSerializer(collaborators, many=True)
+        return Response(serializer.data)
+
+
+class CollaboratorViewSet(viewsets.ModelViewSet):
+    queryset = Collaborator.objects.all()
+    serializer_class = CollaboratorSerializer
     permission_classes = [IsAuthenticated]

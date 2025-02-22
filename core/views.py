@@ -6,8 +6,8 @@ from django.contrib.auth.models import User
 from .models import Project, Collaborator, Notification
 from .serializers import (
     UserSerializer,
+    ProjectSerializer,
 )
-
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -38,3 +38,9 @@ class UserViewSet(viewsets.ModelViewSet):
                 status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProjectViewSet(viewsets.ModelViewSet):
+    queryset = Project.objects.all()
+    serializer_class = ProjectSerializer
+    permission_classes = [IsAuthenticated]

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Project, Collaborator
+from .models import Project, Collaborator, Notification
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,3 +35,9 @@ class CollaboratorSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('This user is already a collaborator for this project.')
 
         return data
+    
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = '__all__'

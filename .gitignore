@@ -1,4 +1,1 @@
 .env
-
-migrations/*
-!migrations/__init__.py

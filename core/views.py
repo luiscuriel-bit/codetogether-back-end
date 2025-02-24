@@ -50,7 +50,6 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
-    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     permission_classes = [IsAuthenticated]
 
@@ -59,7 +58,12 @@ class ProjectViewSet(viewsets.ModelViewSet):
         collaborators = Collaborator.objects.filter(project_id=pk)
         serializer=CollaboratorSerializer(collaborators, many=True)
         return Response(serializer.data)
-
+    
+    def get_queryset(self):
+        user = self.request.user
+        print(user)
+        print(Project.objects.all())
+        return Project.objects.filter(collaborator__user_id=user)
 
 class CollaboratorViewSet(viewsets.ModelViewSet):
     queryset = Collaborator.objects.all()

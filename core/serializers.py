@@ -21,8 +21,18 @@ class ProjectSerializer(serializers.ModelSerializer):
         model = Project
         fields = '__all__'
 
+    def create(self, validated_data):
+        project = Project.objects.create(**validated_data)
+
+        Collaborator.objects.create(
+            user_id=self.context['request'].user,
+            project_id=project,
+            role='admin'
+        )
+
         
 class CollaboratorSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user_id.username', read_only=True)
     class Meta:
         model = Collaborator
         fields = '__all__'

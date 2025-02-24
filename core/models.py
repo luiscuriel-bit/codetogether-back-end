@@ -10,14 +10,13 @@ class Project(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.name
+        return self.name + str(self.owner_id)
 
 
 class Collaborator(models.Model):
     ROLE_CHOICES = [('admin', 'Admin'), ('editor', 'Editor'), ('viewer', 'Viewer')]
 
     user_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100)
     project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
     role = models.CharField(max_length=6, choices=ROLE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)

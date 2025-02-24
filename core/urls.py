@@ -5,7 +5,7 @@ from .views import UserViewSet, ProjectViewSet, CollaboratorViewSet, Notificatio
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
-router.register(r'projects', ProjectViewSet)
+router.register(r'projects', ProjectViewSet, basename='project')
 router.register(r'collaborators', CollaboratorViewSet)
 router.register(r'notifications', NotificationViewSet)
 

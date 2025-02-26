@@ -1,17 +1,20 @@
-from rest_framework import serializers
 from django.contrib.auth.models import User
-from .models import Project, Collaborator, Notification
+from rest_framework import serializers
+
+from .models import Collaborator, Notification, Project
+
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ["id", "username", "email", "first_name", "last_name"]
+        extra_kwargs = {"password": {"write_only": True}}
 
     def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
+        password = validated_data.pop("password", None)
         if password:
             instance.set_password(password)
+            instance.save()
 
         return super().update(instance, validated_data)
 
@@ -19,35 +22,36 @@ class UserSerializer(serializers.ModelSerializer):
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = '__all__'
+        fields = "__all__"
 
     def create(self, validated_data):
-        project = Project.objects.create(**validated_data)
+        owner = validated_data.pop("owner")
+        project = Project.objects.create(owner=owner, **validated_data)
 
-        Collaborator.objects.create(
-            user_id=self.context['request'].user,
-            project_id=project,
-            role='admin'
-        )
+        Collaborator.objects.create(user=owner, project=project, role="admin")
+        return project
 
-        
+
 class CollaboratorSerializer(serializers.ModelSerializer):
-    username = serializers.CharField(source='user_id.username', read_only=True)
+    username = serializers.CharField(source="user.username", read_only=True)
+
     class Meta:
         model = Collaborator
-        fields = '__all__'
+        fields = "__all__"
 
     def validate(self, data):
-        project_id = data.get('project_id')
-        user_id = data.get('user_id')
+        project = data.get("project")
+        user = data.get("user")
 
-        if Collaborator.objects.filter(project_id=project_id, user_id=user_id).exists():
-            raise serializers.ValidationError('This user is already a collaborator for this project.')
+        if Collaborator.objects.filter(project=project, user=user).exists():
+            raise serializers.ValidationError(
+                "This user is already a collaborator for this project."
+            )
 
         return data
-    
+
 
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
-        fields = '__all__'
+        fields = "__all__"

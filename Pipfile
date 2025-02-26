@@ -8,10 +8,14 @@ django = "*"
 psycopg2-binary = "*"
 djangorestframework = "*"
 djangorestframework-simplejwt = "*"
-channels = "*"
-channels-redis = "*"
 django-environ = "*"
 django-cors-headers = "*"
+daphne = "*"
+channels = "*"
+channels-redis = "*"
+black = "*"
+flake8 = "*"
+isort = "*"
 
 [dev-packages]
 

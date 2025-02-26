@@ -10,8 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-from pathlib import Path
 from datetime import timedelta
+from pathlib import Path
+
 import environ
 
 env = environ.Env()
@@ -25,13 +26,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-pxm@)4i)x=pk+n&_f8kbejwoxc7sks(#aeewy*d7lw6pdqjeob"
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["localhost", "127.0.0.1"])
 
 # Application definition
 
@@ -45,7 +45,10 @@ INSTALLED_APPS = [
     "core",
     "rest_framework",
     "corsheaders",
+    "channels",
 ]
+
+ASGI_APPLICATION = "codetogether_backend.asgi.application"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -58,9 +61,13 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-
 CORS_ALLOWED_ORIGINS = [env.str('CORS_ALLOWED_ORIGIN', default='')]
+
 CORS_ALLOW_CREDENTIALS = True
+
+SECURE_CROSS_ORIGIN_OPENER_POLICY = (
+    None  
+)
 
 ROOT_URLCONF = "codetogether_backend.urls"
 
@@ -82,6 +89,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "codetogether_backend.wsgi.application"
 
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [env("REDIS_URL", default="redis://127.0.0.1:6379")],
+        },
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
@@ -119,7 +134,7 @@ REST_FRAMEWORK = {
     )
 }
 
-SIMPLET_JWT = {
+SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(hours=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ROTATE_REFRESH_TOKENS": True,

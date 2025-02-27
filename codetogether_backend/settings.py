@@ -66,8 +66,11 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+CORS_ALLOWED_ORIGINS = env.list('CORS_ALLOWED_ORIGINS', default=[])
+CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS', default=[])
 
-CORS_ALLOWED_ORIGINS = [env.str('CORS_ALLOWED_ORIGIN', default='')]
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 CORS_ALLOW_CREDENTIALS = True
 

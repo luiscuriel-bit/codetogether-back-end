@@ -29,6 +29,8 @@ class ProjectSerializer(serializers.ModelSerializer):
         project = Project.objects.create(owner=owner, **validated_data)
 
         Collaborator.objects.create(user=owner, project=project, role="admin")
+        Notification.objects.create(user=owner, message=f"You created the project '{project.name}'.")
+        
         return project
 
 

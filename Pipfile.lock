@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "44938215bc40d98ca1760b07cf875c0d3e1bdb3bc50a3ac545d18ce2e1f07cef"
+            "sha256": "64caf9abd124be664c33577f8cee1263719322ef9d2ed66f1fb5a9a85d21d80e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -494,6 +494,15 @@
             "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==5.2.1"
+        },
+        "redis-cli": {
+            "hashes": [
+                "sha256:6be46d8e6ae638fec27cb425d499b7f25b1592402c74d5d17f5b85b5e7f988a0",
+                "sha256:e9f6af4a8b7591d8bfd1e23be89bdd9666ce824df881748fb02b88dd30575dc8"
+            ],
+            "index": "pypi",
+            "markers": "python_version >= '3.7'",
+            "version": "==1.0.1"
         },
         "service-identity": {
             "hashes": [

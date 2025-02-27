@@ -98,11 +98,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "codetogether_backend.wsgi.application"
 
+REDIS_URL=env("REDIS_URL", default="redis://localhost:6379")
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [env("REDIS_URL", default="redis://localhost:6379")],
+            "hosts": [REDIS_URL],
         },
     },
 }

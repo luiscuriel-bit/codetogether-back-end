@@ -18,6 +18,7 @@ white-noise = "*"
 gunicorn = "*"
 dj-database-url = "*"
 whitenoise = "*"
+redis-cli = "*"
 
 [dev-packages]
 

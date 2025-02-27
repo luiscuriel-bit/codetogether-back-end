@@ -83,6 +83,10 @@ class CollaboratorViewSet(viewsets.ModelViewSet):
         )
 
         if created:
+            Notification.objects.create(
+                user=user,
+                message=f"You have been added as a collaborator to the project '{project.name}' as a {role}."
+            )
             return Response(
                 {"message": f"{user.username} has been added as a collaborator."},
                 status=status.HTTP_201_CREATED,
@@ -91,9 +95,28 @@ class CollaboratorViewSet(viewsets.ModelViewSet):
             return Response(
                 {"message": "The user is already a collaborator."}, status=status.HTTP_400_BAD_REQUEST,
             )
+        
+    @action(detail=True, methods=["delete"])
+    def remove_collaborator(self, request, pk=None):
+        try:
+            collaborator = get_object_or_404(Collaborator, pk=pk)
+            user = collaborator.user
+            project_name = collaborator.project.name
+            collaborator.delete()
+
+            Notification.objects.create(
+                user=user,
+                message=f"You have been removed from '{project_name}'.",
+            )
+
+            return Response({"message": f"{user.username}  has been removed."}, status=status.HTTP_200_OK)
+        except Collaborator.DoesNotExist:
+            return Response({"message": "The collaborator does not exist."}, status=status.HTTP_404_NOT_FOUND)
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
-    queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user, status="unread")

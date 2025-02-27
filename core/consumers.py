@@ -10,6 +10,8 @@ class CodeConsumer(AsyncJsonWebsocketConsumer):
 
         try:
             self.redis = await redis.from_url(settings.REDIS_URL, decode_responses=True)
+            self.user = self.scope["user"]
+            
             last_code = await self.redis.get(f"project_code_{self.room_name}")
 
             await self.channel_layer.group_add(self.room_group_name, self.channel_name)

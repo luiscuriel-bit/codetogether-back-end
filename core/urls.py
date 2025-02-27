@@ -9,7 +9,7 @@ router = DefaultRouter()
 router.register(r"users", UserViewSet)
 router.register(r"projects", ProjectViewSet, basename="project")
 router.register(r"collaborators", CollaboratorViewSet)
-router.register(r"notifications", NotificationViewSet)
+router.register(r"notifications", NotificationViewSet, basename='notification')
 
 urlpatterns = [
     path("", include(router.urls)),

@@ -13,9 +13,11 @@ django-cors-headers = "*"
 daphne = "*"
 channels = "*"
 channels-redis = "*"
-black = "*"
-flake8 = "*"
-isort = "*"
+redis = "*"
+white-noise = "*"
+gunicorn = "*"
+dj-database-url = "*"
+whitenoise = "*"
 
 [dev-packages]
 

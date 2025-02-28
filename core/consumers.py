@@ -34,7 +34,7 @@ class CodeConsumer(AsyncJsonWebsocketConsumer):
             print(f"Error disconnecting WebSocket: {error}")
 
     async def receive_json(self, content):
-        message = content.get("message", "").strip()
+        message = content.get("message", "")
 
         if message:
             await self.redis.set(f"project_code_{self.room_name}", message)

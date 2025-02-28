@@ -7,9 +7,12 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import Collaborator, Notification, Project
-from .serializers import (CollaboratorSerializer, NotificationSerializer,
-                          ProjectSerializer, UserSerializer)
-
+from .serializers import (
+    CollaboratorSerializer,
+    NotificationSerializer,
+    ProjectSerializer,
+    UserSerializer,
+)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -55,14 +58,13 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         return Project.objects.filter(collaborators__user=user)
-   
+
     @action(detail=True, methods=["GET"])
     def collaborators(self, request, pk=None):
         project = get_object_or_404(Project, pk=pk)
         collaborators = project.collaborators.all()
         serializer = CollaboratorSerializer(collaborators, many=True)
         return Response(serializer.data)
-
 
 
 class CollaboratorViewSet(viewsets.ModelViewSet):
@@ -82,20 +84,29 @@ class CollaboratorViewSet(viewsets.ModelViewSet):
             project=project, user=user, defaults={"role": role}
         )
 
-        if created:
+        if not created:
+            collaborator.role = role
+            collaborator.save()
             Notification.objects.create(
                 user=user,
-                message=f"You have been added as a collaborator to the project '{project.name}' as a {role}."
-            )
-            return Response(
-                {"message": f"{user.username} has been added as a collaborator."},
-                status=status.HTTP_201_CREATED,
+                message=f"You are now a {role} in the project '{project.name}'.",
             )
         else:
-            return Response(
-                {"message": "The user is already a collaborator."}, status=status.HTTP_400_BAD_REQUEST,
+            Notification.objects.create(
+                user=user,
+                message=f"You have been added as a collaborator to the project '{project.name}' as a {role}.",
             )
-        
+
+        serializer = self.get_serializer(collaborator)
+
+        return Response(
+            {
+                "message": f"{user.username} has been added as a collaborator.",
+                "collaborator": serializer.data,
+            },
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK,
+        )
+
     @action(detail=True, methods=["delete"])
     def remove_collaborator(self, request, pk=None):
         try:
@@ -109,9 +120,15 @@ class CollaboratorViewSet(viewsets.ModelViewSet):
                 message=f"You have been removed from '{project_name}'.",
             )
 
-            return Response({"message": f"{user.username}  has been removed."}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": f"{user.username}  has been removed."},
+                status=status.HTTP_200_OK,
+            )
         except Collaborator.DoesNotExist:
-            return Response({"message": "The collaborator does not exist."}, status=status.HTTP_404_NOT_FOUND)
+            return Response(
+                {"message": "The collaborator does not exist."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
 
 class NotificationViewSet(viewsets.ModelViewSet):
